@@ -1,8 +1,10 @@
-package com.example.robotapp;
+package com.example.robotapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.robotapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
