@@ -1,16 +1,26 @@
 package com.example.robotapp.activities;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.robotapp.R;
 
@@ -21,26 +31,42 @@ public class MenuActivity extends AppCompatActivity {
 
     private BluetoothAdapter bluetoothAdapter;
     private static final int REQUEST_ENABLE_BT = 1001;
-    private ListView listView;
+    ArrayList<String> arrayPairedDevices;
+    ArrayList<String> arrayFoundDevices;
+
+    ListView listViewAvailableDevice;
+    ListView listViewConnectDevice;
+    public static final String EXTRA_ADDRESS = "device_address";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //set Content View from xml resources
         setContentView(R.layout.activity_menu);
 
-        //get default Bluetooth adapter
+        listViewConnectDevice = findViewById(R.id.listViewConnectDevice);
+        listViewAvailableDevice = findViewById(R.id.listViewAvailableDevice);
+
+        AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String info = ((TextView)view).getText().toString();
+                String address = info.substring(info.length() - 17);
+                Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                intent.putExtra(EXTRA_ADDRESS, address);
+                startActivity(intent);
+            }
+        };
+        listViewAvailableDevice.setOnItemClickListener(onItemClickListener);
+        listViewConnectDevice.setOnItemClickListener(onItemClickListener);
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        //check if the device supports Bluetooth
         if (bluetoothAdapter != null) {
-            //check if the Bluetooth is enabled
             if (!bluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
             else {
                 findDevice();
-                discoverable();
             }
         }
         else {
@@ -52,17 +78,21 @@ public class MenuActivity extends AppCompatActivity {
     private void findDevice() {
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
-            ArrayList<String> arrayDevices = new ArrayList<String>();
-            // There are paired devices. Get the name and address of each paired device.
+            arrayPairedDevices = new ArrayList();
+
             for (BluetoothDevice device : pairedDevices) {
                 String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                arrayDevices.add(deviceName);
+                String deviceHardwareAddress = device.getAddress();
 
+                arrayPairedDevices.add(deviceName+"\r\n"+deviceHardwareAddress);
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MenuActivity.this, R.layout.fragment_list, arrayDevices);
-            listView = findViewById(R.id.listViewConnectDevice);
-            listView.setAdapter(adapter);
+            ArrayAdapter<String> adapter = new ArrayAdapter(MenuActivity.this, R.layout.fragment_list, arrayPairedDevices);
+            listViewConnectDevice.setAdapter(adapter);
+        }
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(receiver, filter);
+        if(bluetoothAdapter.isDiscovering()) {
+            bluetoothAdapter.cancelDiscovery();
         }
         bluetoothAdapter.startDiscovery();
     }
@@ -70,33 +100,30 @@ public class MenuActivity extends AppCompatActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
 
-                ArrayList<String> arrayDevice = new ArrayList<String>();
-                arrayDevice.add(deviceName);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MenuActivity.this, R.layout.fragment_list, arrayDevice);
-                listView = findViewById(R.id.listViewAvailableDevice);
-                listView.setAdapter(adapter);
+                arrayFoundDevices = new ArrayList<String>();
+                arrayFoundDevices.add(deviceName+"\r\n"+deviceHardwareAddress);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MenuActivity.this, R.layout.fragment_list, arrayFoundDevices);
+                listViewAvailableDevice.setAdapter(adapter);
             }
         }
     };
-
-    private void discoverable() {
-        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(bluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
-        startActivity(discoverableIntent);
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(receiver);
     }
+
+    public void onClickButton(View view) {
+        findDevice();
+    }
+
 }
