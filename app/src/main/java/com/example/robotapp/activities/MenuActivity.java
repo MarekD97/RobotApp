@@ -49,6 +49,7 @@ public class MenuActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                bluetoothAdapter.cancelDiscovery();
                 String info = ((TextView)view).getText().toString();
                 String address = info.substring(info.length() - 17);
                 Intent intent = new Intent(MenuActivity.this, MainActivity.class);
