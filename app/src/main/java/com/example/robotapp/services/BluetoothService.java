@@ -137,6 +137,9 @@ public class BluetoothService {
             acceptThread = null;
         }
         state = STATE_NONE;
+
+        Message msg = handler.obtainMessage(MessageConstants.MESSAGE_STATE_CHANGE, STATE_NONE, -1);
+        msg.sendToTarget();
     }
 
     public void send(byte[] out) {
