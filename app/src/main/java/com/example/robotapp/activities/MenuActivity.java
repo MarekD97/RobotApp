@@ -139,10 +139,9 @@ public class MenuActivity extends AppCompatActivity {
     //Odczyt z handlera tutaj
     private final Handler mHandler = new Handler(){
         public void handleMessage(Message msg2){
-
-            byte[] measure = (byte[]) msg2.obj;
-            //String measure = (String) msg2.obj;
-            //Log.i("Proba2", String.valueOf(measure));
+            Bundle bundle = msg2.getData();
+            float[] measure = bundle.getFloatArray("measurement");
+            Log.i("Pomiar", "x: "+measure[0]+"; y: "+measure[1]+"; z: "+measure[2]);
         }
     };
 
