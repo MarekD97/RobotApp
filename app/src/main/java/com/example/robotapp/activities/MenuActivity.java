@@ -11,6 +11,9 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -23,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.robotapp.R;
+import com.example.robotapp.services.SensorService; //-------------------
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -33,6 +37,8 @@ public class MenuActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1001;
     ArrayList<String> arrayPairedDevices;
     ArrayList<String> arrayFoundDevices;
+
+    private SensorService mSensorService;
 
     ListView listViewAvailableDevice;
     ListView listViewConnectDevice;
@@ -59,6 +65,8 @@ public class MenuActivity extends AppCompatActivity {
         };
         listViewAvailableDevice.setOnItemClickListener(onItemClickListener);
         listViewConnectDevice.setOnItemClickListener(onItemClickListener);
+
+        mSensorService = new SensorService(this, mHandler); //Akcelerometr
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
@@ -126,5 +134,17 @@ public class MenuActivity extends AppCompatActivity {
     public void onClickButton(View view) {
         findDevice();
     }
+
+
+    //Odczyt z handlera tutaj
+    private final Handler mHandler = new Handler(){
+        public void handleMessage(Message msg2){
+
+            byte[] measure = (byte[]) msg2.obj;
+            //String measure = (String) msg2.obj;
+            //Log.i("Proba2", String.valueOf(measure));
+        }
+    };
+
 
 }
