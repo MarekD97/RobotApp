@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -26,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.robotapp.R;
-import com.example.robotapp.services.SensorService; //-------------------
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -38,7 +38,6 @@ public class MenuActivity extends AppCompatActivity {
     ArrayList<String> arrayPairedDevices;
     ArrayList<String> arrayFoundDevices;
 
-    private SensorService mSensorService;
 
     ListView listViewAvailableDevice;
     ListView listViewConnectDevice;
@@ -66,7 +65,7 @@ public class MenuActivity extends AppCompatActivity {
         listViewAvailableDevice.setOnItemClickListener(onItemClickListener);
         listViewConnectDevice.setOnItemClickListener(onItemClickListener);
 
-        mSensorService = new SensorService(this, mHandler); //Akcelerometr
+
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
@@ -136,14 +135,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
 
-    //Odczyt z handlera tutaj
-    private final Handler mHandler = new Handler(){
-        public void handleMessage(Message msg2){
-            Bundle bundle = msg2.getData();
-            float[] measure = bundle.getFloatArray("measurement");
-            Log.i("Pomiar", "x: "+measure[0]+"; y: "+measure[1]+"; z: "+measure[2]);
-        }
-    };
+
 
 
 }
