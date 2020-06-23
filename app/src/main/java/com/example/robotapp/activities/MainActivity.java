@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robotapp.fragments.MotionFragment;
@@ -72,30 +75,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         );
 
         String address = getIntent().getStringExtra(EXTRA_ADDRESS);
-//        final TextView textView = findViewById(R.id.textView);
-//        textView.setText(address);
         bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         bluetoothService = new BluetoothService(this, handler);
         bluetoothService.connect(bluetoothDevice);
-
-//        SeekBar seekBar = findViewById(R.id.seekBar);
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                textView.setText(String.valueOf(progress));
-//                bluetoothService.send((progress + "\n").getBytes());
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//        });
     }
 
     @Override
@@ -151,13 +133,16 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         bluetoothService.stop();
     }
 
-    public void onClickSend(View view) {
-//        EditText textInput = findViewById(R.id.editText);
-//        String inputString = textInput.getText().toString();
+    public void onClickUp(View view) {sendToBluetoothDevice("DU");}
+    public void onClickDown(View view) {sendToBluetoothDevice("DD");}
+    public void onClickLeft(View view) {sendToBluetoothDevice("DL");}
+    public void onClickRight(View view) {sendToBluetoothDevice("DR");}
 
-//        bluetoothService.send(inputString.getBytes());
+    public void sendToBluetoothDevice(String message) {
+        bluetoothService.send(message.getBytes());
     }
 
+    @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -179,12 +164,12 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                             break;
                     }
                     break;
-                case BluetoothService.MessageConstants.MESSAGE_WRITE:
-                    byte[] buffer = (byte[]) msg.obj;
-//                    TextView textView = findViewById(R.id.textView);
-//                    textView.setText(buffer.toString());
-                    break;
                 case BluetoothService.MessageConstants.MESSAGE_READ:
+                    buffer = (byte[]) msg.obj;
+                        TextView textViewCurrent = findViewById(R.id.textViewCurrent);
+                        if(textViewCurrent!=null)
+                            textViewCurrent.setText("Prąd: " + new String(buffer) + "A");
+                    break;
                 case BluetoothService.MessageConstants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(MainActivity.this, "Connected to " + bluetoothDevice.getName(), Toast.LENGTH_LONG).show();
                     break;

@@ -13,6 +13,7 @@ import android.os.Message;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class BluetoothService {
@@ -292,7 +293,7 @@ public class BluetoothService {
         }
 
         public void run() {
-            buffer = new byte[1024];
+            buffer = new byte[32];
             int numBytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs.
@@ -316,7 +317,7 @@ public class BluetoothService {
             try {
                 outputStream.write(bytes);
 
-            } catch (IOException e) {
+            } catch (Exception e) {
             }
         }
 
