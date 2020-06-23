@@ -1,18 +1,23 @@
 package com.example.robotapp.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -20,20 +25,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.robotapp.fragments.MotionFragment;
 import com.example.robotapp.R;
+import com.example.robotapp.fragments.SettingsFragment;
+import com.example.robotapp.fragments.ButtonsFragment;
 import com.example.robotapp.services.BluetoothService;
 import com.example.robotapp.services.SensorService;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener {
 
     public static final String EXTRA_ADDRESS = "device_address";
-    private String address = null;
     private BluetoothService bluetoothService;
     BluetoothDevice bluetoothDevice;
     private byte[] buffer;
@@ -41,18 +44,47 @@ public class MainActivity extends AppCompatActivity {
     private SensorService gyroSensorService;
 
 
+    private static final int numPages = 3;
+    private ViewPager viewPager;
+    private PagerAdapter pagerAdapter;
+    private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
-        address = intent.getStringExtra(EXTRA_ADDRESS);
 
-        final TextView textView = findViewById(R.id.textView);
-        textView.setText(address);
+        viewPager = findViewById(R.id.pager);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.page_buttons:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.page_motion:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.page_settings:
+                                viewPager.setCurrentItem(2);
+                                break;
+                        }
+                        return false;
+                    }
+                }
+        );
+
+        String address = getIntent().getStringExtra(EXTRA_ADDRESS);
         bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         bluetoothService = new BluetoothService(this, handler);
         bluetoothService.connect(bluetoothDevice);
+    }
 
         accelSensorService = new SensorService(this, aHandler, Sensor.TYPE_ACCELEROMETER); //Akcelerometr
         gyroSensorService = new SensorService(this, gHandler, Sensor.TYPE_GYROSCOPE); //Żyroskop
@@ -64,17 +96,52 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(String.valueOf(progress));
                 bluetoothService.send((progress + "\n").getBytes());
             }
+        }
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() == 0) {
+            super.onBackPressed();
+        } else {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        }
+    }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+    @Override
+    public void onArticleSelected(int position) {
+        viewPager.setCurrentItem(position);
+    }
 
+    private class MainPagerAdapter extends FragmentStatePagerAdapter {
+        public MainPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+//                    bottomNavigationView.setSelectedItemId(R.id.page_buttons);
+                    return new ButtonsFragment();
+                case 1:
+//                    bottomNavigationView.setSelectedItemId(R.id.page_motion);
+                    return new MotionFragment();
+                default:
+//                    bottomNavigationView.setSelectedItemId(R.id.page_settings);
+                    return new SettingsFragment();
             }
+        }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+        public int getCount() {
+            return numPages;
+        }
+    }
 
-            }
-        });
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof ButtonsFragment) {
+            ButtonsFragment headlinesFragment = (ButtonsFragment) fragment;
+            headlinesFragment.setOnFragmentSelectedListener(this);
+        }
     }
 
     @Override
@@ -83,13 +150,16 @@ public class MainActivity extends AppCompatActivity {
         bluetoothService.stop();
     }
 
-    public void onClickSend(View view) {
-        EditText textInput = findViewById(R.id.editText);
-        String inputString = textInput.getText().toString();
+    public void onClickUp(View view) {sendToBluetoothDevice("DU");}
+    public void onClickDown(View view) {sendToBluetoothDevice("DD");}
+    public void onClickLeft(View view) {sendToBluetoothDevice("DL");}
+    public void onClickRight(View view) {sendToBluetoothDevice("DR");}
 
-        bluetoothService.send(inputString.getBytes());
+    public void sendToBluetoothDevice(String message) {
+        bluetoothService.send(message.getBytes());
     }
 
+    @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -107,16 +177,16 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case BluetoothService.STATE_LISTEN:
                         case BluetoothService.STATE_NONE:
-                            Toast.makeText(MainActivity.this, bluetoothDevice.getName()+" is disconnected", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, bluetoothDevice.getName() + " is disconnected", Toast.LENGTH_LONG).show();
                             break;
                     }
                     break;
-                case BluetoothService.MessageConstants.MESSAGE_WRITE:
-                    byte[] buffer = (byte[]) msg.obj;
-                    TextView textView = findViewById(R.id.textView);
-                    textView.setText(buffer.toString());
-                    break;
                 case BluetoothService.MessageConstants.MESSAGE_READ:
+                    buffer = (byte[]) msg.obj;
+                        TextView textViewCurrent = findViewById(R.id.textViewCurrent);
+                        if(textViewCurrent!=null)
+                            textViewCurrent.setText("Prąd: " + new String(buffer) + "A");
+                    break;
                 case BluetoothService.MessageConstants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(MainActivity.this, "Connected to " + bluetoothDevice.getName(), Toast.LENGTH_LONG).show();
                     break;
