@@ -11,8 +11,10 @@ import androidx.viewpager.widget.ViewPager;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,8 +43,8 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     BluetoothDevice bluetoothDevice;
     private byte[] buffer;
     private SensorService accelSensorService;
+    private SensorService gravitySensor;
     private SensorService gyroSensorService;
-
 
     private static final int numPages = 3;
     private ViewPager viewPager;
@@ -84,19 +86,12 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         bluetoothService = new BluetoothService(this, handler);
         bluetoothService.connect(bluetoothDevice);
-    }
 
         accelSensorService = new SensorService(this, aHandler, Sensor.TYPE_ACCELEROMETER); //Akcelerometr
         gyroSensorService = new SensorService(this, gHandler, Sensor.TYPE_GYROSCOPE); //Żyroskop
+    }
 
-        SeekBar seekBar = findViewById(R.id.seekBar);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textView.setText(String.valueOf(progress));
-                bluetoothService.send((progress + "\n").getBytes());
-            }
-        }
+
     @Override
     public void onBackPressed() {
         if (viewPager.getCurrentItem() == 0) {
@@ -199,14 +194,21 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     };
 
     //Odczyt z handlera tutaj
+    @SuppressLint("HandlerLeak")
     private final Handler aHandler = new Handler(){
         public void handleMessage(Message msg2){
             Bundle bundle = msg2.getData();
             float[] aMeasure = bundle.getFloatArray(String.valueOf(Sensor.TYPE_ACCELEROMETER));
+
             Log.i("Akcelerometr", "x: "+aMeasure[0]+"; y: "+aMeasure[1]+"; z: "+aMeasure[2]);
+            TextView textView = findViewById(R.id.textViewAccelerometer);
+            if(textView!=null) {
+                textView.setText("Akcelerometr:\n " + "x: " + aMeasure[0] + "\n y: " + aMeasure[1] + "\n z: " + aMeasure[2]);
+            }
         }
     };
 
+    @SuppressLint("HandlerLeak")
     private final Handler gHandler = new Handler(){
         public void handleMessage(Message msg3){
             Bundle bundle = msg3.getData();

@@ -54,4 +54,5 @@ public class SensorService implements SensorEventListener{
         msg2.setData(mBundle);
         mHandler.sendMessage(msg2);
     }
+
 }
