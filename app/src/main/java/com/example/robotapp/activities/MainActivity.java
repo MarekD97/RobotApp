@@ -12,9 +12,11 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.hardware.Sensor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -28,6 +30,7 @@ import com.example.robotapp.R;
 import com.example.robotapp.fragments.SettingsFragment;
 import com.example.robotapp.fragments.ButtonsFragment;
 import com.example.robotapp.services.BluetoothService;
+import com.example.robotapp.services.SensorService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     private BluetoothService bluetoothService;
     BluetoothDevice bluetoothDevice;
     private byte[] buffer;
+    private SensorService accelSensorService;
+    private SensorService gyroSensorService;
+
 
     private static final int numPages = 3;
     private ViewPager viewPager;
@@ -80,6 +86,17 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         bluetoothService.connect(bluetoothDevice);
     }
 
+        accelSensorService = new SensorService(this, aHandler, Sensor.TYPE_ACCELEROMETER); //Akcelerometr
+        gyroSensorService = new SensorService(this, gHandler, Sensor.TYPE_GYROSCOPE); //Żyroskop
+
+        SeekBar seekBar = findViewById(R.id.seekBar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textView.setText(String.valueOf(progress));
+                bluetoothService.send((progress + "\n").getBytes());
+            }
+        }
     @Override
     public void onBackPressed() {
         if (viewPager.getCurrentItem() == 0) {
@@ -180,4 +197,22 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             }
         }
     };
+
+    //Odczyt z handlera tutaj
+    private final Handler aHandler = new Handler(){
+        public void handleMessage(Message msg2){
+            Bundle bundle = msg2.getData();
+            float[] aMeasure = bundle.getFloatArray(String.valueOf(Sensor.TYPE_ACCELEROMETER));
+            Log.i("Akcelerometr", "x: "+aMeasure[0]+"; y: "+aMeasure[1]+"; z: "+aMeasure[2]);
+        }
+    };
+
+    private final Handler gHandler = new Handler(){
+        public void handleMessage(Message msg3){
+            Bundle bundle = msg3.getData();
+            float[] gMeasure = bundle.getFloatArray(String.valueOf(Sensor.TYPE_GYROSCOPE));
+            Log.i("Zyroskop", "x: "+gMeasure[0]+"; y: "+gMeasure[1]+"; z: "+gMeasure[2]);
+        }
+    };
+
 }

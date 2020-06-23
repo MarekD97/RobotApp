@@ -8,9 +8,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -33,6 +37,7 @@ public class MenuActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1001;
     ArrayList<String> arrayPairedDevices;
     ArrayList<String> arrayFoundDevices;
+
 
     ListView listViewAvailableDevice;
     ListView listViewConnectDevice;
@@ -59,6 +64,8 @@ public class MenuActivity extends AppCompatActivity {
         };
         listViewAvailableDevice.setOnItemClickListener(onItemClickListener);
         listViewConnectDevice.setOnItemClickListener(onItemClickListener);
+
+
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
@@ -126,5 +133,9 @@ public class MenuActivity extends AppCompatActivity {
     public void onClickButton(View view) {
         findDevice();
     }
+
+
+
+
 
 }
