@@ -12,21 +12,21 @@ import android.util.Log;
 
 public class SensorService implements SensorEventListener{
     private final SensorManager mSensorManager;
-    private final Sensor mAccelerometer, mGravity, mGyroscope;
+    private final Sensor mAccelerometer, mGyroscope;
     public Handler mHandler;
 
+    /*
     private float mMeasure; // acceleration apart from gravity
     private float mMeasureCurrent; // current acceleration including gravity
     private float mMeasureLast; // last acceleration including gravity
-    private float[] array = new float[9];
+     */
+    private float[] array = new float[6];
 
     public SensorService(Context context, Handler handler) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mGravity = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mGravity, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mGyroscope, SensorManager.SENSOR_DELAY_NORMAL);
         this.mHandler = handler;
     }
@@ -34,15 +34,10 @@ public class SensorService implements SensorEventListener{
     @Override
     public void onSensorChanged(SensorEvent event) {
         Sensor sensor = event.sensor;
-        if(sensor.getType() == Sensor.TYPE_GRAVITY){
-            array[6] = event.values[0];
-            array[7] = event.values[1];
-            array[8] = event.values[2];
-            Log.i("Grawitacja", " "+array[6]+" "+array[7]+" "+array[8]);
-        }else if (sensor.getType() == Sensor.TYPE_ACCELEROMETER){
-            array[0] = event.values[0] - array[6];
-            array[1] = event.values[1] - array[7];
-            array[2] = event.values[2] - array[8];
+        if (sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
+            array[0] = event.values[0];
+            array[1] = event.values[1];
+            array[2] = event.values[2];
             Log.i("Akcelerometr", " "+array[0]+" "+array[1]+" "+array[2]);
         }else if (sensor.getType() == Sensor.TYPE_GYROSCOPE){
             array[3] = event.values[0];
@@ -50,6 +45,7 @@ public class SensorService implements SensorEventListener{
             array[5] = event.values[2];
             Log.i("Zyroskop", " "+array[3]+" "+array[4]+" "+array[5]);
         }
+
         /*
         float x = event.values[0];
         float y = event.values[1];

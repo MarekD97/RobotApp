@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             Bundle bundle = msg2.getData();
             float[] aMeasure = bundle.getFloatArray("Measurement");
 
-            Log.i("zHandlera", " :"+aMeasure[0]+"; : "+aMeasure[1]+"; : "+aMeasure[2]+"; : "+aMeasure[3]+"; : "+aMeasure[4]+"; : "+aMeasure[5]+"; : "+aMeasure[6]+"; : "+aMeasure[7]+"; : "+aMeasure[8]);
+            Log.i("zHandlera", " :"+aMeasure[0]+"; : "+aMeasure[1]+"; : "+aMeasure[2]+"; : "+aMeasure[3]+"; : "+aMeasure[4]+"; : "+aMeasure[5]);
             TextView textView = findViewById(R.id.textViewAccelerometer);
             if(textView!=null) {
                 textView.setText("Akcelerometr:\n " + "x: " + aMeasure[0] + "\n y: " + aMeasure[1] + "\n z: " + aMeasure[2]);
