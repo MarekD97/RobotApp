@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         bluetoothService = new BluetoothService(this, handler);
         bluetoothService.connect(bluetoothDevice);
 
-        accelSensorService = new SensorService(this, aHandler, Sensor.TYPE_ACCELEROMETER); //Akcelerometr
-        gyroSensorService = new SensorService(this, gHandler, Sensor.TYPE_GYROSCOPE); //Żyroskop
+        accelSensorService = new SensorService(this, aHandler); //Akcelerometr
+       // gyroSensorService = new SensorService(this, gHandler, Sensor.TYPE_GYROSCOPE); //Żyroskop
     }
 
 
@@ -194,13 +194,14 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     };
 
     //Odczyt z handlera tutaj
+
     @SuppressLint("HandlerLeak")
     private final Handler aHandler = new Handler(){
         public void handleMessage(Message msg2){
             Bundle bundle = msg2.getData();
-            float[] aMeasure = bundle.getFloatArray(String.valueOf(Sensor.TYPE_ACCELEROMETER));
+            float[] aMeasure = bundle.getFloatArray("Measurement");
 
-            Log.i("Akcelerometr", "x: "+aMeasure[0]+"; y: "+aMeasure[1]+"; z: "+aMeasure[2]);
+            Log.i("zHandlera", " :"+aMeasure[0]+"; : "+aMeasure[1]+"; : "+aMeasure[2]+"; : "+aMeasure[3]+"; : "+aMeasure[4]+"; : "+aMeasure[5]);
             TextView textView = findViewById(R.id.textViewAccelerometer);
             if(textView!=null) {
                 textView.setText("Akcelerometr:\n " + "x: " + aMeasure[0] + "\n y: " + aMeasure[1] + "\n z: " + aMeasure[2]);
@@ -208,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         }
     };
 
+    /*
     @SuppressLint("HandlerLeak")
     private final Handler gHandler = new Handler(){
         public void handleMessage(Message msg3){
@@ -216,5 +218,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             Log.i("Zyroskop", "x: "+gMeasure[0]+"; y: "+gMeasure[1]+"; z: "+gMeasure[2]);
         }
     };
+
+     */
 
 }
