@@ -1,7 +1,9 @@
 package com.example.robotapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,8 +11,10 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -19,34 +23,27 @@ import com.example.robotapp.activities.MainActivity;
 
 public class ButtonsFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
-
     public ButtonsFragment() {
         // Required empty public constructor
     }
-    public static ButtonsFragment newInstance(String param1, String param2) {
-        ButtonsFragment fragment = new ButtonsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_buttons, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_buttons, container, false);
 
-        final SeekBar seekBar1  = (SeekBar) rootView.findViewById(R.id.seekBar1);
+        final SeekBar seekBar1 = (SeekBar) rootView.findViewById(R.id.seekBar1);
+        final SeekBar seekBar2 = (SeekBar) rootView.findViewById(R.id.seekBar2);
+        final SeekBar seekBar3 = (SeekBar) rootView.findViewById(R.id.seekBar3);
+        final SeekBar seekBar4 = (SeekBar) rootView.findViewById(R.id.seekBar4);
+        final SeekBar seekBar5 = (SeekBar) rootView.findViewById(R.id.seekBar5);
+
         seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((MainActivity)getActivity()).sendToBluetoothDevice("S1:"+progress+";");
+                ((MainActivity) getActivity()).sendToBluetoothDevice("A0:" + progress + ";");
             }
 
             @Override
@@ -59,11 +56,10 @@ public class ButtonsFragment extends Fragment {
 
             }
         });
-        final SeekBar seekBar2 = (SeekBar) rootView.findViewById(R.id.seekBar2);
         seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((MainActivity)getActivity()).sendToBluetoothDevice("S2:"+progress+";");
+                ((MainActivity) getActivity()).sendToBluetoothDevice("A1:" + progress + ";");
             }
 
             @Override
@@ -76,11 +72,42 @@ public class ButtonsFragment extends Fragment {
 
             }
         });
-        final SeekBar seekBar3 = (SeekBar) rootView.findViewById(R.id.seekBar3);
         seekBar3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((MainActivity)getActivity()).sendToBluetoothDevice("S3:"+progress+";");
+                ((MainActivity) getActivity()).sendToBluetoothDevice("A2:" + progress + ";");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        seekBar4.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((MainActivity) getActivity()).sendToBluetoothDevice("A3:" + progress + ";");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        seekBar5.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((MainActivity) getActivity()).sendToBluetoothDevice("A4:" + progress + ";");
             }
 
             @Override
@@ -94,40 +121,80 @@ public class ButtonsFragment extends Fragment {
             }
         });
 
+        final Button buttonForward = (Button) rootView.findViewById(R.id.buttonUp);
+        final Button buttonBackwards = (Button) rootView.findViewById(R.id.buttonDown);
+        final Button buttonLeft = (Button) rootView.findViewById(R.id.buttonLeft);
+        final Button buttonRight = (Button) rootView.findViewById(R.id.buttonRight);
+
+        buttonForward.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        ((MainActivity) getActivity()).sendToBluetoothDevice("D0");
+                        buttonForward.setBackgroundResource(R.drawable.ic_active_circle);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buttonForward.setBackgroundResource(R.drawable.ic_fill_circle);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+        buttonBackwards.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        ((MainActivity) getActivity()).sendToBluetoothDevice("D1");
+                        buttonBackwards.setBackgroundResource(R.drawable.ic_active_circle);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buttonBackwards.setBackgroundResource(R.drawable.ic_fill_circle);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+        buttonLeft.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        ((MainActivity) getActivity()).sendToBluetoothDevice("D2");
+                        buttonLeft.setBackgroundResource(R.drawable.ic_active_circle);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buttonLeft.setBackgroundResource(R.drawable.ic_fill_circle);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+        buttonRight.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        ((MainActivity) getActivity()).sendToBluetoothDevice("D3");
+                        buttonRight.setBackgroundResource(R.drawable.ic_active_circle);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        buttonRight.setBackgroundResource(R.drawable.ic_fill_circle);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
 
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public void setOnFragmentSelectedListener(OnFragmentInteractionListener callback) {
-        this.mListener = callback;
-    }
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onArticleSelected(int position);
     }
 }

@@ -23,45 +23,73 @@
     <Button
         android:id="@+id/buttonPower"
         android:layout_width="160dp"
-        android:layout_height="120dp"
+        android:layout_height="160dp"
         android:layout_marginBottom="32dp"
+        android:background="@drawable/ic_fill_circle"
         android:text="Załącz napęd [przytrzymaj]"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button6"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/buttonArm"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/ic_fill_circle"
         android:text="Ramię"
         app:layout_constraintBottom_toTopOf="@+id/buttonPower"
-        app:layout_constraintEnd_toStartOf="@+id/button7"
+        app:layout_constraintEnd_toStartOf="@+id/buttonGripper"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/buttonGripper"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/ic_fill_circle"
+        android:text="Chwytak"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPower"
+        app:layout_constraintEnd_toStartOf="@+id/buttonVehicle"
+        app:layout_constraintStart_toEndOf="@+id/buttonArm" />
+
+    <Button
+        android:id="@+id/buttonVehicle"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/ic_fill_circle"
+        android:text="Pojazd"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPower"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonGripper" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="80dp"
-        android:text="Chwytak"
-        app:layout_constraintBottom_toTopOf="@+id/buttonPower"
-        app:layout_constraintEnd_toStartOf="@+id/button8"
-        app:layout_constraintStart_toEndOf="@+id/button6" />
-
-    <Button
-        android:id="@+id/button8"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="80dp"
-        android:text="Pojazd"
-        app:layout_constraintBottom_toTopOf="@+id/buttonPower"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button7" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

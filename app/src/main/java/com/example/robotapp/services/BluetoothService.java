@@ -8,8 +8,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -293,7 +295,7 @@ public class BluetoothService {
         }
 
         public void run() {
-            buffer = new byte[32];
+            buffer = new byte[16];
             int numBytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs.

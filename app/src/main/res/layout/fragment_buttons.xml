@@ -146,10 +146,10 @@
 
             <Button
                 android:id="@+id/buttonUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickUp"
-                android:text="▲"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/ic_fill_circle"
+                android:foreground="@drawable/ic_arrow_up"
                 app:layout_constraintBottom_toTopOf="@+id/buttonDown"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -157,10 +157,10 @@
 
             <Button
                 android:id="@+id/buttonDown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickDown"
-                android:text="▼"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/ic_fill_circle"
+                android:foreground="@drawable/ic_arrow_down"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonRight"
                 app:layout_constraintStart_toEndOf="@+id/buttonLeft"
@@ -168,10 +168,10 @@
 
             <Button
                 android:id="@+id/buttonRight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickRight"
-                android:text="▶"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/ic_fill_circle"
+                android:foreground="@drawable/ic_arrow_right"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/buttonDown"
@@ -179,10 +179,10 @@
 
             <Button
                 android:id="@+id/buttonLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickLeft"
-                android:text="◀"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/ic_fill_circle"
+                android:foreground="@drawable/ic_arrow_left"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonDown"
                 app:layout_constraintStart_toStartOf="parent"

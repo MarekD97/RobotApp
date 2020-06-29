@@ -6,7 +6,7 @@
         android:id="@+id/page_buttons"
         android:enabled="true"
         android:icon="@drawable/ic_manual"
-        android:title="Przyciski"/>
+        android:title="Przyciski" />
     <item
         android:id="@+id/page_motion"
         android:enabled="true"
