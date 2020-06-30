@@ -25,7 +25,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Obrót ramienia wokół własnej osi"
+            android:text="Obrót podstawy ramienia"
             android:textSize="18sp" />
 
         <SeekBar
@@ -33,12 +33,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="8dp" />
+            android:scrollbarSize="16dp"
+            android:tag="0" />
 
         <TextView
             android:id="@+id/textViewSeekbar2"
@@ -50,7 +47,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Odległość od środka ramienia - promień"
+            android:text="Nachylenie podstawy ramienia"
             android:textSize="18sp" />
 
         <SeekBar
@@ -58,12 +55,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="8dp" />
+            android:scrollbarSize="16dp"
+            android:tag="1" />
 
         <TextView
             android:id="@+id/textViewSeekbar3"
@@ -75,11 +69,20 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Wysokość chwytaka"
+            android:text="Nachylenie środka ramienia"
             android:textSize="18sp" />
 
         <SeekBar
             android:id="@+id/seekBar3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:scrollbarSize="16dp"
+            android:tag="2" />
+
+        <TextView
+            android:id="@+id/textViewSeekbar4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -88,10 +91,20 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
-            android:scrollbarSize="8dp" />
+            android:text="Nachylenie chwytaka"
+            android:textSize="18sp" />
+
+        <SeekBar
+            android:id="@+id/seekBar4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:scrollbarSize="16dp"
+            android:tag="3" />
 
         <TextView
-            android:id="@+id/textViewSeekbar4"
+            android:id="@+id/textViewSeekbar5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -104,19 +117,16 @@
             android:textSize="18sp" />
 
         <SeekBar
-            android:id="@+id/seekBar4"
+            android:id="@+id/seekBar5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="8dp" />
+            android:scrollbarSize="16dp"
+            android:tag="4" />
 
         <TextView
-            android:id="@+id/textViewSeekbar5"
+            android:id="@+id/textViewSeekbar6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -129,16 +139,13 @@
             android:textSize="18sp" />
 
         <SeekBar
-            android:id="@+id/seekBar5"
+            android:id="@+id/seekBar6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:scrollbarSize="8dp" />
+            android:scrollbarSize="16dp"
+            android:tag="5" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -150,6 +157,7 @@
                 android:layout_height="80dp"
                 android:background="@drawable/ic_fill_circle"
                 android:foreground="@drawable/ic_arrow_up"
+                android:tag="0"
                 app:layout_constraintBottom_toTopOf="@+id/buttonDown"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -161,6 +169,7 @@
                 android:layout_height="80dp"
                 android:background="@drawable/ic_fill_circle"
                 android:foreground="@drawable/ic_arrow_down"
+                android:tag="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonRight"
                 app:layout_constraintStart_toEndOf="@+id/buttonLeft"
@@ -172,6 +181,7 @@
                 android:layout_height="80dp"
                 android:background="@drawable/ic_fill_circle"
                 android:foreground="@drawable/ic_arrow_right"
+                android:tag="3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/buttonDown"
@@ -183,6 +193,7 @@
                 android:layout_height="80dp"
                 android:background="@drawable/ic_fill_circle"
                 android:foreground="@drawable/ic_arrow_left"
+                android:tag="2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonDown"
                 app:layout_constraintStart_toStartOf="parent"

@@ -19,10 +19,12 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private PagerAdapter pagerAdapter;
     private BottomNavigationView bottomNavigationView;
 
+    public float armPosition[] = new float[6];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,14 +70,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         bottomNavigationView.setSelectedItemId(R.id.page_buttons);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
                         switch (menuItem.getItemId()) {
                             case R.id.page_buttons:
                                 viewPager.setCurrentItem(0);
@@ -153,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         case BluetoothService.STATE_CONNECTED:
                             Toast.makeText(MainActivity.this, "Połączono", Toast.LENGTH_LONG).show();
                             progressBarBackground.setVisibility(View.GONE);
+                            sendToBluetoothDevice("GET_PARAMS");
                             break;
                         case BluetoothService.STATE_CONNECTING:
                             Toast.makeText(MainActivity.this, "Łączę...", Toast.LENGTH_LONG).show();
@@ -165,14 +168,25 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case BluetoothService.MessageConstants.MESSAGE_READ:
-                    byte[] buffer = (byte[]) msg.obj;
+                    String buffer = new String((byte[])msg.obj);
+                    if(buffer.startsWith("C")) {
                         TextView textViewCurrent = findViewById(R.id.textViewCurrentValue);
-                        if(textViewCurrent!=null) {
-                            String value = new String(buffer);
-                            value = value.substring(value.indexOf("C")+1);
-                            value = value.substring(0, value.indexOf(";"));
-                            textViewCurrent.setText(value  + " A");
+                        if(textViewCurrent!=null){
+                            textViewCurrent.setText(buffer.substring(buffer.indexOf(":")+2, buffer.indexOf(";"))  + " A");
                         }
+                    }
+                    if(buffer.startsWith("A")) {
+                        int servoNumber = Character.getNumericValue(buffer.charAt(buffer.indexOf("A")+1));
+                        float angle = Float.valueOf(buffer.substring(buffer.indexOf(":")+1, buffer.indexOf(";")));
+                        armPosition[servoNumber]=angle/1.8f;
+                        Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+                        if (fragment instanceof ButtonsFragment) {
+                            ((ButtonsFragment) fragment).setSeekBarsProgress();
+                        }
+                    }
+                    if(buffer.contains("STOP")) {
+                        Toast.makeText(MainActivity.this, "Odłączenie zasilania...", Toast.LENGTH_LONG ).show();
+                    }
                     break;
                 case BluetoothService.MessageConstants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(MainActivity.this, "Połączono z " + bluetoothDevice.getName(), Toast.LENGTH_LONG).show();
