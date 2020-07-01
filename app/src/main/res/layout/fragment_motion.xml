@@ -38,6 +38,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/ic_fill_circle"
+        android:tag="0"
         android:text="Ramię"
         app:layout_constraintBottom_toTopOf="@+id/buttonPower"
         app:layout_constraintEnd_toStartOf="@+id/buttonGripper"
@@ -51,6 +52,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/ic_fill_circle"
+        android:tag="1"
         android:text="Chwytak"
         app:layout_constraintBottom_toTopOf="@+id/buttonPower"
         app:layout_constraintEnd_toStartOf="@+id/buttonVehicle"
@@ -63,6 +65,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/ic_fill_circle"
+        android:tag="2"
         android:text="Pojazd"
         app:layout_constraintBottom_toTopOf="@+id/buttonPower"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,5 +94,43 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressBar2" />
+
+    <ProgressBar
+        android:id="@+id/progressBar4"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar3" />
+
+    <TextView
+        android:id="@+id/textViewSensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar4"
+        tools:layout_editor_absoluteX="188dp" />
+
+    <TextView
+        android:id="@+id/textViewWarning"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Kiedy tryb agresywny jest włączony sterowanie ramieniem robota jest niedostępne."
+        android:textAlignment="center"
+        android:textColor="#F44336"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/buttonGripper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -96,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         bluetoothService = new BluetoothService(this, handler);
         bluetoothService.connect(bluetoothDevice);
+
+        for (int i=0; i<6;i++) {
+            armPosition[i] = 50;
+        }
     }
 
 
@@ -143,6 +147,13 @@ public class MainActivity extends AppCompatActivity {
         bluetoothService.send(message.getBytes());
     }
 
+    public void setMode(boolean aggressiveMode) {
+        Fragment fragment = getSupportFragmentManager().getFragments().get(0);
+        if (fragment instanceof MotionFragment) {
+            ((MotionFragment) fragment).setActiveButtons(aggressiveMode);
+        }
+    }
+
     //Odczyt z BluetoothService
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
@@ -184,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
                             ((ButtonsFragment) fragment).setSeekBarsProgress();
                         }
                     }
-                    if(buffer.contains("STOP")) {
-                        Toast.makeText(MainActivity.this, "Odłączenie zasilania...", Toast.LENGTH_LONG ).show();
-                    }
+//                    if(buffer.contains("STOP")) {
+//                        Toast.makeText(MainActivity.this, "Odłączenie zasilania...", Toast.LENGTH_LONG ).show();
+//                    }
                     break;
                 case BluetoothService.MessageConstants.MESSAGE_DEVICE_NAME:
                     Toast.makeText(MainActivity.this, "Połączono z " + bluetoothDevice.getName(), Toast.LENGTH_LONG).show();

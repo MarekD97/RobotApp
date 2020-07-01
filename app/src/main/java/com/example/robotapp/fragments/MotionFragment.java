@@ -26,28 +26,20 @@ import java.sql.Driver;
 
 public class MotionFragment extends Fragment {
 
+    TextView textView;
+    TextView textViewWarning;
+
     private int selectedMode = 0;   //0 - arm, 1 - gripper, 2 - vehicle
     private boolean powerEnabled = false;
 
-    private float[] position;
-    private boolean driveTo = false;
-    private float driveRotationX;
-    private float driveRotationZ;
-
-    private float gripperPositionX;
-    private float gripperRotationX;
-
     ProgressBar progressBar2;
     ProgressBar progressBar3;
+    ProgressBar progressBar4;
+
+    Button[] buttons = new Button[3];
 
 
     public MotionFragment() {
-        position = new float[4];
-        driveRotationX = driveRotationZ = 0;
-        gripperPositionX = gripperRotationX = 50;
-        for(int i=0;i<4;i++) {
-            position[i] = 50;
-        }
     }
 
     @Override
@@ -56,64 +48,35 @@ public class MotionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_motion, container, false);
         SensorService mSensorService = new SensorService(getContext(), sensorHandler); //Akcelerometr
 
-        final Button buttonArm = rootView.findViewById(R.id.buttonArm);
-        final Button buttonGripper = rootView.findViewById(R.id.buttonGripper);
-        final Button buttonVehicle = rootView.findViewById(R.id.buttonVehicle);
+        buttons[0] = rootView.findViewById(R.id.buttonArm);
+        buttons[1] = rootView.findViewById(R.id.buttonGripper);
+        buttons[2] = rootView.findViewById(R.id.buttonVehicle);
+
+        textView = rootView.findViewById(R.id.textViewSensor);
+        textViewWarning = rootView.findViewById(R.id.textViewWarning);
 
         progressBar2 = rootView.findViewById(R.id.progressBar2);
         progressBar3 = rootView.findViewById(R.id.progressBar3);
+        progressBar4 = rootView.findViewById(R.id.progressBar4);
 
-        switch (selectedMode) {
-            case 0:
-                buttonArm.setBackgroundResource(R.drawable.ic_active_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_fill_circle);
-                break;
-            case 1:
-                buttonArm.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_active_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_fill_circle);
-                break;
-            case 2:
-                buttonArm.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_active_circle);
-                break;
-            default:
-                buttonArm.setBackgroundResource(R.drawable.ic_active_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_fill_circle);
-                selectedMode = 0;
-                break;
+        for(int i=0; i<3;i++) {
+            if(i==selectedMode)
+                buttons[i].setBackgroundResource(R.drawable.ic_active_circle);
+            else
+                buttons[i].setBackgroundResource(R.drawable.ic_fill_circle);
+            buttons[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectedMode = Integer.valueOf(v.getTag().toString());
+                    for(int i=0; i<3;i++) {
+                        if (i == selectedMode)
+                            buttons[i].setBackgroundResource(R.drawable.ic_active_circle);
+                        else
+                            buttons[i].setBackgroundResource(R.drawable.ic_fill_circle);
+                    }
+                }
+            });
         }
-
-        buttonArm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonArm.setBackgroundResource(R.drawable.ic_active_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_fill_circle);
-                selectedMode = 0;
-            }
-        });
-        buttonGripper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonArm.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_active_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_fill_circle);
-                selectedMode = 1;
-            }
-        });
-        buttonVehicle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buttonArm.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonGripper.setBackgroundResource(R.drawable.ic_fill_circle);
-                buttonVehicle.setBackgroundResource(R.drawable.ic_active_circle);
-                selectedMode = 2;
-            }
-        });
 
         final Button buttonPower = rootView.findViewById(R.id.buttonPower);
         buttonPower.setOnTouchListener(new View.OnTouchListener() {
@@ -144,39 +107,48 @@ public class MotionFragment extends Fragment {
             float[] measure = bundle.getFloatArray("Measurement");
 
             Log.i("Accelerometer", " :" + measure[0] + " " + measure[1] + " " + measure[2]);
-            Log.i("Gyroscope", " :" + measure[3] + " " + measure[4] + " " + measure[5]);
 
             float posX = measure[0];
             float posY = measure[1];
             float posZ = measure[2];
 
-            float rotX = measure[3];
-            float rotY = measure[4];
-            float rotZ = measure[5];
+            textView.setText("Pomiary:\n"+posX+",\n"+posY+",\n"+posZ);
 
         if(powerEnabled) {
             switch (selectedMode) {
                 case 0:
+                    int armRx = (int)Math.min(180, Math.max(0, -posX*10 +50));
+                    int armRy = (int)Math.min(180, Math.max(0, -posY*10 +50));
 
+                    if(posZ>7) {
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A0:" + armRx + ";");
+                        progressBar2.setProgress(armRx);
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A1:"+armRy+";");
+                        progressBar3.setProgress(armRy);
+                    }
+                    else {
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A2:" + armRx + ";");
+                        progressBar4.setProgress(armRy);
+                    }
 
                     break;
                 case 1:
-                    int gripperDirection = DetectMotionGripper(posX, rotX);
-                    switch (gripperDirection) {
-                        case 0:
-                            ((MainActivity) getContext()).sendToBluetoothDevice("A4:"+gripperRotationX+";");
-                            break;
-                        case 1:
-                            ((MainActivity) getContext()).sendToBluetoothDevice("A3:"+gripperPositionX+";");
-                            default: break;
+                    int gripperRx = (int)Math.min(180, Math.max(0, -posX*10 +50));
+                    int gripperRy = (int)Math.min(180, Math.max(0, -posY*10 +50));
+
+                    if(posZ>7) {
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A4:" + gripperRx + ";");
+                        progressBar2.setProgress(gripperRx);
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A3:"+gripperRy+";");
+                        progressBar3.setProgress(gripperRy);
                     }
-                    Log.i("Gripper", " :"+gripperPositionX+" :"+gripperRotationX);
-                    progressBar2.setProgress((int)gripperPositionX);
-                    progressBar3.setProgress((int)gripperRotationX);
+                    else {
+                        ((MainActivity) getContext()).sendToBluetoothDevice("A5:" + gripperRx + ";");
+                        progressBar4.setProgress(gripperRx);
+                    }
                     break;
                 case 2:
-                    driveTo = true;
-                    int driveDirection = DetectMotionVehicle(rotX, rotZ);
+                    int driveDirection = DetectMotionVehicle(posX, posY);
                     switch (driveDirection) {
                         case 0:
                             ((MainActivity) getContext()).sendToBluetoothDevice("D0");
@@ -192,65 +164,40 @@ public class MotionFragment extends Fragment {
                             break;
                             default: break;
                     }
-                    Log.i("Vehicle", " :"+driveRotationX+" :"+driveRotationZ);
                     break;
                 default:
                     break;
             }
-        } else {
-            driveTo = false;
-            driveRotationX = driveRotationZ = 0;
         }
         }
     };
 
-    private int DetectMotionVehicle(float rotationX, float rotationZ) {
-        if(Math.abs(rotationX) > 1) {
-            driveRotationX += rotationX;
-            driveRotationZ = 0;
-            if(rotationX>5)
-                driveRotationX = 5;
-            else if(rotationX<-5)
-                driveRotationX = -5;
-        } else if(Math.abs(rotationZ)>1){
-            driveRotationX = 0;
-            driveRotationZ += rotationZ;
-            if(rotationZ>5)
-                driveRotationZ = 5;
-            else if(rotationZ < -5)
-                driveRotationZ = -5;
-        }
-        if(driveRotationX < -4)
+    private int DetectMotionVehicle(float positionX, float positionY) {
+        if(positionY < -4)
             return 0;
-        else if(driveRotationX > 4)
+        else if(positionY > 4)
             return 1;
-        else if(driveRotationZ > 4)
+        else if(positionX > 4)
             return 2;
-        else if(driveRotationZ < -4)
+        else if(positionX < -4)
             return 3;
         return -1;
     }
 
-    private int DetectMotionGripper(float positionX, float rotationX) {
-        if(Math.abs(positionX) > .1 ) {
-            gripperPositionX += positionX*10;
-            if(gripperPositionX < 0)
-                gripperPositionX = 0;
-            else if (gripperPositionX > 100)
-                gripperPositionX = 100;
-            return 0;
-        } else if(Math.abs(rotationX) > .1) {
-            gripperRotationX += rotationX*10;
-            if(gripperRotationX < 0)
-                gripperRotationX = 0;
-            else if(gripperRotationX > 100)
-                gripperRotationX = 100;
-            return 1;
+    public void setActiveButtons(boolean enabled) {
+        buttons[0].setEnabled(enabled);
+        buttons[1].setEnabled(enabled);
+        if(!enabled) {
+            textViewWarning.setVisibility(View.VISIBLE);
+            buttons[0].setBackgroundResource(R.drawable.ic_fill_circle);
+            buttons[1].setBackgroundResource(R.drawable.ic_fill_circle);
+            buttons[2].setBackgroundResource(R.drawable.ic_active_circle);
+        } else {
+            textViewWarning.setVisibility(View.GONE);
+            buttons[0].setBackgroundResource(R.drawable.ic_active_circle);
+            buttons[1].setBackgroundResource(R.drawable.ic_fill_circle);
+            buttons[2].setBackgroundResource(R.drawable.ic_fill_circle);
         }
-        return  -1;
-    }
 
-    private int DetectMotionArm(float positionX, float positionZ, float rotationZ) {
-        return 0;
     }
 }
